@@ -1,0 +1,37 @@
+{
+  "name": "inpsyde/metabox-orchestra",
+  "description": "Package for OOP WordPress metabox orchestration.",
+  "type": "library",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Inpsyde GmbH",
+      "email": "hello@inpsyde.com",
+      "homepage": "http://inpsyde.com",
+      "role": "Company"
+    },
+    {
+      "name": "Giuseppe Mazzapica",
+      "email": "g.mazzapica@inpsyde.com",
+      "role": "Developer"
+    }
+  ],
+  "minimum-stability": "stable",
+  "require": {
+    "php": ">=7",
+    "brain/nonces": "1.0.*"
+  },
+  "autoload": {
+    "psr-4": {
+      "MetaboxOrchestra\\": "src/"
+    }
+  },
+  "config": {
+    "optimize-autoloader": true
+  },
+  "extra": {
+    "branch-alias": {
+      "dev-master": "0.x-dev"
+    }
+  }
+}
