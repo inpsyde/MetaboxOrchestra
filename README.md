@@ -61,7 +61,7 @@ interface PostMetabox extends Metabox {
 	const SAVE = 'save';
     const SHOW = 'show';
 
-	public function create_info(): BoxInfo;
+	public function create_info( string $show_or_save ): BoxInfo;
 
 	public function accept( \WP_Post $post, string $save_or_show ): bool;
 	
@@ -87,7 +87,7 @@ This is a value object, shipped with the library. It encapsulates the scalar arg
 From inside `create_info()` method an info object can be returned just by instantiating it:
 
 ```php
-public function create_info(): BoxInfo {
+public function create_info( string $show_or_save ): BoxInfo {
 
 	return new BoxInfo( 'My Sample Metabox' );
 }
@@ -106,7 +106,7 @@ However, only the title is mandatory, all other arguments will be set to sensiti
 `BoxInfo` comes with a set of class constants that help in setting them, if one wants to. For example:
 
 ```php
-public function create_info(): BoxInfo {
+public function create_info( string $show_or_save ): BoxInfo {
 
 	$this->info or $this->info = new BoxInfo(
 		__( 'My Sample Metabox', 'my-txt-domain' ),
@@ -118,6 +118,9 @@ public function create_info(): BoxInfo {
 	return $this->info;
 }
 ```
+
+The `$show_or_save` argument can be used to distinguish if the `create_info()` is called when showing the metabox or
+when saving it; fir the purpose the passed value has to be compared to the constants: `Metabox::SHOW` and `Metabox::SAVE`.
 
 ### Metabox View
 
@@ -231,7 +234,7 @@ class SampleMetabox implements MetaboxOrchestra\TermMetabox {
 		return $term->taxonomy === 'category';
 	}
 
-	public function create_info(): MetaboxOrchestra\BoxInfo {
+	public function create_info( string $show_or_save ): MetaboxOrchestra\BoxInfo {
 		return new MetaboxOrchestra\BoxInfo( 'My Sample Box' );
 	}
 

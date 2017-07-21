@@ -20,8 +20,10 @@ interface Metabox {
 	const SHOW = 'show';
 
 	/**
+	 * @param string $show_or_save
+	 *
 	 * @return BoxInfo
 	 */
-	public function create_info(): BoxInfo;
+	public function create_info( string $show_or_save ): BoxInfo;
 
 }
