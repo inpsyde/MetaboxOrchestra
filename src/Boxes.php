@@ -150,7 +150,7 @@ class Boxes {
 			array_walk( $this->boxes, [ $this, 'save_meta_box' ], $post );
 			$this->release_target();
 
-		}, PHP_INT_MAX, 2 );
+		}, 100, 2 );
 
 		return TRUE;
 	}
@@ -187,7 +187,7 @@ class Boxes {
 			array_walk( $this->boxes, [ $this, 'save_meta_box' ], $term );
 			$this->release_target();
 
-		}, PHP_INT_MAX, 3 );
+		}, 100, 3 );
 
 		return TRUE;
 	}
