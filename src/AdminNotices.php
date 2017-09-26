@@ -10,8 +10,6 @@
 
 namespace MetaboxOrchestra;
 
-use function Brain\Monkey\Actions\doing;
-
 /**
  * @package metabox-orchestra
  * @license http://opensource.org/licenses/MIT MIT
@@ -113,16 +111,17 @@ class AdminNotices {
 		$user_id   = get_current_user_id();
 		$screen_id = get_current_screen()->id;
 		$messages  = (array) get_user_option( self::OPTION_NAME, $user_id );
+
 		if ( ! empty( $messages[ $screen_id ] ) ) {
-			self::$init->print_messages( (array) $messages[ $screen_id ] );
+			$this->print_messages( (array) $messages[ $screen_id ] );
 			unset( $messages[ $screen_id ] );
 
 			return $messages
 				? (bool) update_user_option( $user_id, self::OPTION_NAME, $messages )
-				: (bool) delete_user_option( $user_id, self::OPTION_NAME, $messages );
+				: (bool) delete_user_option( $user_id, self::OPTION_NAME );
 		}
 
-		return (bool) delete_user_option( $user_id, self::OPTION_NAME, $messages );
+		return (bool) delete_user_option( $user_id, self::OPTION_NAME );
 	}
 
 	/**
