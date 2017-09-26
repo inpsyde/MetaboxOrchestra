@@ -33,6 +33,16 @@ class AdminNotices {
 	private $messages = [];
 
 	/**
+	 * @var bool
+	 */
+	private $printed = FALSE;
+
+	/**
+	 * @var bool
+	 */
+	private $recorded = FALSE;
+
+	/**
 	 * @var string
 	 */
 	private $default_screen = '';
@@ -44,26 +54,14 @@ class AdminNotices {
 	 */
 	public static function init( string $default_screen = '' ): AdminNotices {
 
-		if ( self::$init ) {
-			return self::$init->use_default_screen( $default_screen );
+		if ( ! self::$init ) {
+
+			self::$init = new static();
+
+			add_action( 'shutdown', [ self::$init, 'record' ]);
+
+			add_action( 'admin_notices', [ self::$init, 'do_notices' ] );
 		}
-
-		self::$init = new static();
-
-		add_action( 'shutdown', function () {
-			self::$init->record();
-		} );
-
-		add_action( 'admin_notices', function () {
-			$user_id = get_current_user_id();
-			$target  = get_current_screen()->id;
-			$data    = (array) get_user_option( self::OPTION_NAME, $user_id );
-			if ( ! empty( $data[ $target ] ) ) {
-				self::$init->print_messages( (array) $data[ $target ] );
-				unset( $data[ $target ] );
-				update_user_option( $user_id, self::OPTION_NAME, $data );
-			}
-		} );
 
 		return self::$init->use_default_screen( $default_screen );
 	}
@@ -100,16 +98,53 @@ class AdminNotices {
 	}
 
 	/**
-	 * Store (or delete) messages on shutdown.
+	 * @return bool
 	 */
-	private function record() {
+	public function do_notices(): bool {
+
+		if ( $this->printed || ! doing_action( 'admin_notices' ) ) {
+			return FALSE;
+		}
+
+		$this->printed = TRUE;
+
+		$user_id   = get_current_user_id();
+		$screen_id = get_current_screen()->id;
+		$messages  = (array) get_user_option( self::OPTION_NAME, $user_id );
+
+		if ( ! empty( $messages[ $screen_id ] ) ) {
+			$this->print_messages( (array) $messages[ $screen_id ] );
+			unset( $messages[ $screen_id ] );
+
+			return $messages
+				? (bool) update_user_option( $user_id, self::OPTION_NAME, $messages )
+				: (bool) delete_user_option( $user_id, self::OPTION_NAME );
+		}
+
+		return (bool) delete_user_option( $user_id, self::OPTION_NAME );
+	}
+
+	/**
+	 * Store (or delete) messages on shutdown.
+	 *
+	 * @return bool
+	 */
+	public function record(): bool {
+
+		if ( $this->recorded || ! doing_action( 'shutdown' ) ) {
+			return FALSE;
+		}
+
+		$this->recorded = TRUE;
 
 		$user_id = get_current_user_id();
 		if ( $user_id ) {
-			$this->messages
-				? update_user_option( $user_id, self::OPTION_NAME, $this->messages )
-				: delete_user_option( $user_id, self::OPTION_NAME );
+			return $this->messages
+				? (bool) update_user_option( $user_id, self::OPTION_NAME, $this->messages )
+				: (bool) delete_user_option( $user_id, self::OPTION_NAME );
 		}
+
+		return FALSE;
 	}
 
 	/**
