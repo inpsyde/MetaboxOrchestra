@@ -59,12 +59,7 @@ class TermMetaboxAuthTest extends TestCase {
 
 		Functions\expect( 'get_taxonomy' )
 			->once()
-			->andReturn(
-				(object) [
-					'cap'           => (object) [ 'edit_terms' => '' ],
-					'capabilitites' => (object) [ 'edit_terms' => '' ]
-				]
-			);
+			->andReturn( $this->taxonomy() );
 
 		Functions\expect( 'current_user_can' )
 			->once()
@@ -92,12 +87,7 @@ class TermMetaboxAuthTest extends TestCase {
 
 		Functions\expect( 'get_taxonomy' )
 			->once()
-			->andReturn(
-				(object) [
-					'cap'           => (object) [ 'edit_terms' => '' ],
-					'capabilitites' => (object) [ 'edit_terms' => '' ]
-				]
-			);
+			->andReturn( $this->taxonomy() );
 
 		Functions\expect( 'current_user_can' )
 			->once()
@@ -132,12 +122,7 @@ class TermMetaboxAuthTest extends TestCase {
 
 		Functions\expect( 'get_taxonomy' )
 			->once()
-			->andReturn(
-				(object) [
-					'cap'           => (object) [ 'edit_terms' => '' ],
-					'capabilitites' => (object) [ 'edit_terms' => '' ]
-				]
-			);
+			->andReturn( $this->taxonomy() );
 
 		Functions\expect( 'current_user_can' )
 			->once()
@@ -169,12 +154,7 @@ class TermMetaboxAuthTest extends TestCase {
 
 		Functions\expect( 'get_taxonomy' )
 			->once()
-			->andReturn(
-				(object) [
-					'cap'           => (object) [ 'edit_terms' => '' ],
-					'capabilitites' => (object) [ 'edit_terms' => '' ]
-				]
-			);
+			->andReturn( $this->taxonomy() );
 
 		Functions\expect( 'current_user_can' )
 			->once()
@@ -196,4 +176,16 @@ class TermMetaboxAuthTest extends TestCase {
 		static::assertTrue( ( new TermMetaboxAuth( $wp_term, $nonce ) )->authorized() );
 	}
 
+	/**
+	 * Internal function for re-usage as response for get_taxonomy()-mock.
+	 *
+	 * @return \stdClass
+	 */
+	private function taxonomy(): \stdClass {
+
+		return (object) [
+			'cap'           => (object) [ 'edit_terms' => '' ],
+			'capabilitites' => (object) [ 'edit_terms' => '' ]
+		];
+	}
 }
