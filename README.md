@@ -1,4 +1,4 @@
-# Metabox Orchestra [![Latest Stable Version](https://poser.pugx.org/inpsyde/MetaboxOrchestra/v/stable)](https://packagist.org/packages/inpsyde/MetaboxOrchestra) [![Project Status](http://opensource.box.com/badges/active.svg)](http://opensource.box.com/badges) [![Build Status](https://travis-ci.org/inpsyde/MetaboxOrchestra.svg?branch=master)](http://travis-ci.org/inpsyde/MetaboxOrchestra) [![License](https://poser.pugx.org/inpsyde/MetaboxOrchestra/license)](https://packagist.org/packages/inpsyde/MetaboxOrchestra)
+# Metabox Orchestra [![Latest Stable Version](https://poser.pugx.org/inpsyde/metabox-orchestra/v/stable)](https://packagist.org/packages/inpsyde/metabox-orchestra) [![Project Status](http://opensource.box.com/badges/active.svg)](http://opensource.box.com/badges) [![Build Status](https://travis-ci.org/inpsyde/MetaboxOrchestra.svg?branch=master)](http://travis-ci.org/inpsyde/MetaboxOrchestra) [![License](https://poser.pugx.org/inpsyde/metabox-orchestra/license)](https://packagist.org/packages/inpsyde/metabox-orchestra)
 
 > A Composer package that provides OOP metabox orchestration for WordPress.
 
