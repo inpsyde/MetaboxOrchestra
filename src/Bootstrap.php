@@ -34,7 +34,7 @@ class Bootstrap {
 			return FALSE;
 		}
 
-		self::$done = add_action( 'admin_menu', function () {
+		self::$done = (bool) add_action( 'admin_menu', function () {
 			Boxes::init();
 			AdminNotices::init();
 		}, 0 );

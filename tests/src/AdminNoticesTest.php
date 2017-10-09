@@ -10,8 +10,8 @@
 
 namespace MetaboxOrchestra\Tests;
 
-use MetaboxOrchestra\AdminNotices;
 use Brain\Monkey\Functions;
+use MetaboxOrchestra\AdminNotices;
 
 /**
  * @author  Giuseppe Mazzapica <giuseppe.mazzapica@gmail.com>
@@ -32,31 +32,35 @@ class AdminNoticesTest extends TestCase {
 		$notices->add( 'This is an error', 'Error!', AdminNotices::ERROR );
 		$notices->add( 'This is a success', 'Success!', AdminNotices::SUCCESS );
 
-		Functions\expect( 'doing_action' )->with( 'shutdown' )->andReturn( TRUE );
+		Functions\expect( 'doing_action' )
+			->with( 'shutdown' )
+			->andReturn( TRUE );
 
 		Functions\expect( 'update_user_option' )
 			->once()
 			->with( 1, AdminNotices::OPTION_NAME, \Mockery::type( 'array' ) )
-			->andReturnUsing( function ( $id, $option, $messages ) {
+			->andReturnUsing(
+				function ( $id, $option, $messages ) {
 
-				static::assertArrayHasKey( 'screen_test', $messages );
-				static::assertArrayHasKey( AdminNotices::ERROR, $messages[ 'screen_test' ] );
-				static::assertArrayHasKey( AdminNotices::SUCCESS, $messages[ 'screen_test' ] );
-				static::assertInternalType( 'array', $messages[ 'screen_test' ][ AdminNotices::ERROR ] );
-				static::assertInternalType( 'array', $messages[ 'screen_test' ][ AdminNotices::SUCCESS ] );
-				static::assertCount( 1, $messages[ 'screen_test' ][ AdminNotices::ERROR ] );
-				static::assertCount( 1, $messages[ 'screen_test' ][ AdminNotices::SUCCESS ] );
+					static::assertArrayHasKey( 'screen_test', $messages );
+					static::assertArrayHasKey( AdminNotices::ERROR, $messages[ 'screen_test' ] );
+					static::assertArrayHasKey( AdminNotices::SUCCESS, $messages[ 'screen_test' ] );
+					static::assertInternalType( 'array', $messages[ 'screen_test' ][ AdminNotices::ERROR ] );
+					static::assertInternalType( 'array', $messages[ 'screen_test' ][ AdminNotices::SUCCESS ] );
+					static::assertCount( 1, $messages[ 'screen_test' ][ AdminNotices::ERROR ] );
+					static::assertCount( 1, $messages[ 'screen_test' ][ AdminNotices::SUCCESS ] );
 
-				$error   = reset( $messages[ 'screen_test' ][ AdminNotices::ERROR ] );
-				$success = reset( $messages[ 'screen_test' ][ AdminNotices::SUCCESS ] );
+					$error   = reset( $messages[ 'screen_test' ][ AdminNotices::ERROR ] );
+					$success = reset( $messages[ 'screen_test' ][ AdminNotices::SUCCESS ] );
 
-				static::assertInternalType( 'array', $error );
-				static::assertInternalType( 'array', $success );
-				static::assertContains( 'This is an error', $error );
-				static::assertContains( 'Error!', $error );
-				static::assertContains( 'This is a success', $success );
-				static::assertContains( 'Success!', $success );
-			} );
+					static::assertInternalType( 'array', $error );
+					static::assertInternalType( 'array', $success );
+					static::assertContains( 'This is an error', $error );
+					static::assertContains( 'Error!', $error );
+					static::assertContains( 'This is a success', $success );
+					static::assertContains( 'Success!', $success );
+				}
+			);
 
 		$notices->record();
 	}
@@ -71,20 +75,35 @@ class AdminNoticesTest extends TestCase {
 		$notices->add( 'This is an error', 'Error!', AdminNotices::ERROR );
 		$notices->add( 'This is a success', 'Success!', AdminNotices::SUCCESS );
 
-		$to_print = null;
+		$to_print = NULL;
 
-		Functions\expect( 'doing_action' )->once()->with( 'shutdown' )->andReturn( TRUE );
+		Functions\expect( 'doing_action' )
+			->once()
+			->with( 'shutdown' )
+			->andReturn( TRUE );
 		Functions\expect( 'update_user_option' )
-			->andReturnUsing( function ( $id, $option, $messages ) use ( &$to_print ) {
-				$to_print = $messages;
-				return TRUE;
-			} );
+			->andReturnUsing(
+				function ( $id, $option, $messages ) use ( &$to_print ) {
+
+					$to_print = $messages;
+
+					return TRUE;
+				}
+			);
 
 		$notices->record();
 
-		Functions\expect( 'doing_action' )->once()->with( 'admin_notices' )->andReturn( TRUE );
-		Functions\expect( 'get_user_option' )->once()->with( AdminNotices::OPTION_NAME, 123 )->andReturn( $to_print );
-		Functions\expect( 'delete_user_option' )->once()->with( 123, AdminNotices::OPTION_NAME );
+		Functions\expect( 'doing_action' )
+			->once()
+			->with( 'admin_notices' )
+			->andReturn( TRUE );
+		Functions\expect( 'get_user_option' )
+			->once()
+			->with( AdminNotices::OPTION_NAME, 123 )
+			->andReturn( $to_print );
+		Functions\expect( 'delete_user_option' )
+			->once()
+			->with( 123, AdminNotices::OPTION_NAME );
 		Functions\expect( 'esc_html' )->andReturnFirstArg();
 		Functions\expect( 'wp_kses_post' )->andReturnFirstArg();
 
@@ -98,5 +117,15 @@ class AdminNoticesTest extends TestCase {
 		static::assertContains( 'Success!', $output );
 		static::assertContains( 'This is an error', $output );
 		static::assertContains( 'This is a success', $output );
+	}
+
+	public function testAddNoUserId() {
+
+		Functions\expect( 'get_current_user_id' )
+			->once()
+			->andReturn( FALSE );
+
+		$testee = new AdminNotices();
+		static::assertInstanceOf( AdminNotices::class, $testee->add( '' ) );
 	}
 }

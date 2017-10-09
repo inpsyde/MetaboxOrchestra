@@ -56,8 +56,14 @@ final class BoxInfo implements \ArrayAccess {
 	 */
 	public function __construct( string $title, string $id = '', string $context = '', string $priority = '' ) {
 
-		( $priority && in_array( $priority, self::PRIORITIES, TRUE ) ) or $priority = self::PRIORITY_ADVANCED;
-		( $context && in_array( $context, self::CONTEXTS, TRUE ) ) or $context = self::CONTEXT_ADVANCED;
+		$priority = in_array( $priority, self::PRIORITIES, TRUE )
+			? $priority
+			: self::PRIORITY_ADVANCED;
+
+		$context = in_array( $context, self::CONTEXTS, TRUE )
+			? $context
+			: self::CONTEXT_ADVANCED;
+
 		$id or $id = sanitize_title_with_dashes( $title );
 
 		$this->storage = compact( 'title', 'id', 'context', 'priority' );
@@ -108,7 +114,7 @@ final class BoxInfo implements \ArrayAccess {
 	 */
 	public function offsetGet( $offset ) {
 
-		return $this->offsetExists( $offset ) ? $this->meta[ $offset ] : null;
+		return $this->offsetExists( $offset ) ? $this->meta[ $offset ] : NULL;
 	}
 
 	/**
