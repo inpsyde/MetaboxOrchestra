@@ -87,7 +87,7 @@ This is a value object, shipped with the library. It encapsulates the scalar arg
 From inside `create_info()` method an info object can be returned just by instantiating it:
 
 ```php
-public function create_info( string $show_or_save ): BoxInfo {
+public function create_info( string $show_or_save, Entity $entity ): BoxInfo {
 
 	return new BoxInfo( 'My Sample Metabox' );
 }
@@ -121,6 +121,22 @@ public function create_info( string $show_or_save ): BoxInfo {
 
 The `$show_or_save` argument can be used to distinguish if the `create_info()` is called when showing the metabox or
 when saving it; fir the purpose the passed value has to be compared to the constants: `Metabox::SHOW` and `Metabox::SAVE`.
+
+The `$entity` argument is an object wrapping the `WP_Post` (or `WP_Term`) the metabox will be shown for.
+
+The objects as a method `is()` to know what king of object it actually wraps, and other useful methods, including `expose()`
+that return the wrapped object.
+
+For example, to use the post type label as part of metabox title it is possible do:
+
+```php
+public function create_info( string $show_or_save, Entity $entity ): BoxInfo {
+
+	$post_type = get_post_type_object( $entity->post_type );
+
+	return new BoxInfo( sprintf( 'My %s Metabox', $post_type->labels->singular_name ) );
+}
+```
 
 ### Metabox View
 

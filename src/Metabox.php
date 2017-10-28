@@ -21,9 +21,10 @@ interface Metabox {
 
 	/**
 	 * @param string $show_or_save
+	 * @param Entity $entity
 	 *
 	 * @return BoxInfo
 	 */
-	public function create_info( string $show_or_save ): BoxInfo;
+	public function create_info( string $show_or_save, Entity $entity ): BoxInfo;
 
 }

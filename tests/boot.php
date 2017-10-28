@@ -11,7 +11,7 @@
 putenv( 'TESTS_PATH=' . __DIR__ );
 putenv( 'LIBRARY_PATH=' . dirname( __DIR__ ) );
 
-$vendor = dirname( dirname( __FILE__ ) ) . '/vendor/';
+$vendor = dirname( __DIR__ ) . '/vendor/';
 
 if ( ! realpath( $vendor ) ) {
 	die( 'Please install via Composer before running tests.' );

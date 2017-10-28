@@ -36,7 +36,7 @@ class Boxes {
 	private $locked = TRUE;
 
 	/**
-	 * @var \WP_Term|\WP_Post
+	 * @var Entity
 	 */
 	private $target;
 
@@ -77,21 +77,21 @@ class Boxes {
 			throw new \BadMethodCallException( 'Cannot add boxes when controller is locked.' );
 		}
 
-		$is_post = $this->target instanceof \WP_Post;
-		$is_term = $this->target instanceof \WP_Term;
-
 		if (
-			( ! $is_post && ! $is_term )
+			$this->target->valid()
 			|| ! in_array( $this->registering_for, [ Metabox::SAVE, Metabox::SHOW ], TRUE )
 		) {
 			return $this;
 		}
 
+		$is_post = $this->target->is( \WP_Post::class );
+		$is_term = $this->target->is( \WP_Term::class );
+
 		foreach ( $boxes as $box ) {
 			if ( $is_post && $box instanceof PostMetabox ) {
-				$this->boxes[ $box->create_info( $this->registering_for )->id() ] = $box;
+				$this->boxes[ $box->create_info( $this->registering_for, $this->target )->id() ] = $box;
 			} elseif ( $is_term && $box instanceof TermMetabox ) {
-				$this->boxes[ $box->create_info( $this->registering_for )->id() ] = $box;
+				$this->boxes[ $box->create_info( $this->registering_for, $this->target )->id() ] = $box;
 			}
 		}
 
@@ -138,7 +138,7 @@ class Boxes {
 		add_action( 'add_meta_boxes', function ( $post_type, $post ) {
 			if ( $post instanceof \WP_Post ) {
 				$this->prepare_target( $post, Metabox::SHOW );
-				array_walk( $this->boxes, [ $this, 'add_meta_box' ], $post );
+				array_walk( $this->boxes, [ $this, 'add_meta_box' ] );
 				$this->release_target();
 			}
 		}, 100, 2 );
@@ -147,7 +147,7 @@ class Boxes {
 		add_action( 'wp_insert_post', function ( $post_id, \WP_Post $post ) {
 
 			$this->prepare_target( $post, Metabox::SAVE );
-			array_walk( $this->boxes, [ $this, 'save_meta_box' ], $post );
+			array_walk( $this->boxes, [ $this, 'save_meta_box' ] );
 			$this->release_target();
 
 		}, 100, 2 );
@@ -165,7 +165,7 @@ class Boxes {
 		// Show Boxes
 		add_action( "{$taxonomy}_pre_edit_form", function ( \WP_Term $term ) {
 			$this->prepare_target( $term, Metabox::SHOW );
-			array_walk( $this->boxes, [ $this, 'add_meta_box' ], $term );
+			array_walk( $this->boxes, [ $this, 'add_meta_box' ] );
 			$this->release_target();
 		}, 1 );
 
@@ -184,7 +184,7 @@ class Boxes {
 			}
 
 			$this->prepare_target( $term, Metabox::SAVE );
-			array_walk( $this->boxes, [ $this, 'save_meta_box' ], $term );
+			array_walk( $this->boxes, [ $this, 'save_meta_box' ] );
 			$this->release_target();
 
 		}, 100, 3 );
@@ -198,29 +198,40 @@ class Boxes {
 	 */
 	private function prepare_target( $target, string $show_or_save ) {
 
-		$this->target          = $target;
+		$this->target          = new Entity( $target );
 		$this->registering_for = $show_or_save;
 		$this->boxes           = [];
 
 		$this->locked = FALSE;
 
-		do_action( self::REGISTER_BOXES, $this, $this->target, $show_or_save );
+		$this->target->valid() and do_action( self::REGISTER_BOXES, $this, $this->target, $show_or_save );
 
 		$this->locked = TRUE;
 	}
 
 	/**
 	 * @param Metabox|PostMetabox|TermMetabox $box
-	 * @param \WP_Term|\WP_Post               $object
 	 * @param string                          $type
 	 *
 	 * @return bool
 	 */
-	private function box_enabled( Metabox $box, $object, string $type ): bool {
+	private function box_enabled( Metabox $box, string $type ): bool {
 
-		$accept = $object instanceof \WP_Post
-			? $box->accept_post( $object, $type )
-			: $box->accept_term( $object, $type );
+		if ( ! $this->target->valid() ) {
+			return FALSE;
+		}
+
+		$accept = FALSE;
+		/** @var \WP_Post|\WP_Term $object */
+		$object = $this->target->expose();
+		switch ( TRUE ) {
+			case $this->target->is( \WP_Post::class ) && $box instanceof PostMetabox:
+				$accept = $box->accept_post( $object, $type );
+				break;
+			case $this->target->is( \WP_Term::class ) && $box instanceof TermMetabox:
+				$accept = $box->accept_term( $object, $type );
+				break;
+		}
 
 		return (bool) apply_filters( 'metabox-orchestra.box-enabled', $accept, $box, $object );
 	}
@@ -228,17 +239,18 @@ class Boxes {
 	/**
 	 * @param Metabox|PostMetabox|TermMetabox $box
 	 * @param string                          $box_id
-	 * @param \WP_Post|\WP_Term               $object
 	 */
-	private function add_meta_box( Metabox $box, string $box_id, $object ) {
+	private function add_meta_box( Metabox $box, string $box_id ) {
 
-		if ( ! $this->box_enabled( $box, $object, Metabox::SHOW ) ) {
+		if ( ! $this->box_enabled( $box, Metabox::SHOW ) ) {
 			return;
 		}
 
-		$is_post = $object instanceof \WP_Post;
-		$info    = $box->create_info( Metabox::SHOW );
-		$view    = $is_post ? $box->view_for_post( $object ) : $box->view_for_term( $object );
+		$is_post = $this->target->is( \WP_Post::class );
+		/** @var \WP_Post|\WP_Term $object */
+		$object = $this->target->expose();
+		$info   = $box->create_info( Metabox::SHOW, $this->target );
+		$view   = $is_post ? $box->view_for_post( $object ) : $box->view_for_term( $object );
 
 		$box_suffix = $is_post ? '-postbox' : '-termbox';
 		$context    = $info->context();
@@ -269,16 +281,17 @@ class Boxes {
 	/**
 	 * @param Metabox|PostMetabox|TermMetabox $box
 	 * @param string                          $box_id
-	 * @param \WP_Post|\WP_Term               $object
 	 */
-	private function save_meta_box( Metabox $box, string $box_id, $object ) {
+	private function save_meta_box( Metabox $box, string $box_id ) {
 
-		if ( ! $this->box_enabled( $box, $object, Metabox::SAVE ) ) {
+		if ( ! $this->box_enabled( $box, Metabox::SAVE ) ) {
 			return;
 		}
 
-		$is_post = $object instanceof \WP_Post;
+		$is_post = $this->target->is( \WP_Post::class );
+		$object  = $this->target->expose();
 
+		/** @var \WP_Post|\WP_Term $object */
 		if ( $is_post && ( wp_is_post_autosave( $object ) || wp_is_post_revision( $object ) ) ) {
 			return;
 		}

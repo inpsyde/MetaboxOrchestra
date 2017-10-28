@@ -11,7 +11,6 @@
 namespace MetaboxOrchestra;
 
 /**
- * @author  Giuseppe Mazzapica <giuseppe.mazzapica@gmail.com>
  * @package metabox-orchestra
  * @license http://opensource.org/licenses/MIT MIT
  */

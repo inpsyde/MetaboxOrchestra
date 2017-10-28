@@ -11,7 +11,6 @@
 namespace MetaboxOrchestra;
 
 /**
- * @author  Giuseppe Mazzapica <giuseppe.mazzapica@gmail.com>
  * @package metabox-orchestra
  * @license http://opensource.org/licenses/MIT MIT
  */
@@ -23,6 +22,7 @@ final class NoopBoxView implements BoxView {
 	 * @return string
 	 */
 	public function render( BoxInfo $info ): string {
+
 		return '';
 	}
 
