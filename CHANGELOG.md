@@ -15,3 +15,7 @@
 ## 0.3.0
 - Introduce `Entity` object to wrap supported objects for metaboxes (currently `\WP_Post` ad `\WP_Term`)
 - **[BREAKING]** `Metabox::create_info()` new requires two arguments, the second being current `Entity`.
+
+## 0.3.1
+- Fix a bug in Boxes class
+- update README code sample.
