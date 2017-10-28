@@ -55,6 +55,7 @@ class Boxes {
 			$instance = new static();
 
 			if ( $screen->taxonomy ) {
+
 				$instance->init_for_term( $screen->taxonomy );
 				add_action( "{$screen->taxonomy}_edit_form", [ $instance, 'print_term_boxes' ] );
 
@@ -78,7 +79,7 @@ class Boxes {
 		}
 
 		if (
-			$this->target->valid()
+			! $this->target->valid()
 			|| ! in_array( $this->registering_for, [ Metabox::SAVE, Metabox::SHOW ], TRUE )
 		) {
 			return $this;
