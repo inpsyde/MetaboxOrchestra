@@ -246,21 +246,21 @@ use MetaboxOrchestra;
 
 class SampleMetabox implements MetaboxOrchestra\TermMetabox {
 
-	public function accept( \WP_Term $term, string $save_or_show ): bool {
-		return $term->taxonomy === 'category';
-	}
-
-	public function create_info( string $show_or_save ): MetaboxOrchestra\BoxInfo {
-		return new MetaboxOrchestra\BoxInfo( 'My Sample Box' );
-	}
-
-	public function create_view( \WP_Term $term ): MetaboxOrchestra\BoxView {
-		return new SampleView( $term );
-	}
-
-	public function create_action( \WP_Term $term ): MetaboxOrchestra\BoxAction {
-		return new SampleAction( $term );
-	}
+	public function create_info( string $show_or_save, MetaboxOrchestra\Entity $entity ): MetaboxOrchestra\BoxInfo {
+    	return new MetaboxOrchestra\BoxInfo( 'My Sample Box' );
+    }
+    
+    public function accept_term( \WP_Term $term, string $save_or_show ): bool {
+    	return true;
+    }
+    
+    public function view_for_term( \WP_Term $term ): BoxView {
+    	return new SampleView( $term );
+    }
+    
+    public function action_for_term( \WP_Term $term ): BoxAction {
+    	return new SampleAction( $term );
+    }
 }
 
 class SampleView implements MetaboxOrchestra\BoxView {
@@ -306,7 +306,7 @@ class SampleAction implements MetaboxOrchestra\BoxAction {
 
 MetaboxOrchestra\Bootstrap::bootstrap();
 
-add_action( MetaboxOrchestra\Boxes::REGISTER_TERM_BOXES, function ( MetaboxOrchestra\Boxes $boxes ) {
+add_action( MetaboxOrchestra\Boxes::REGISTER_BOXES, function ( MetaboxOrchestra\Boxes $boxes ) {
 	$boxes->add_box( new SampleMetabox() );
 } );
 ```
