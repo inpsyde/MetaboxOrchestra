@@ -19,3 +19,7 @@
 
 ## 0.3.2
 - Prevent recursion when editing post/term object form inside a `BoxAction::save()` method.
+
+## 0.3.3
+- Added three new hooks: before showing boxes and before and after saving them.
+- Improved `Entity` object constructor, now accepts an instance of another `Entity`.
