@@ -35,12 +35,15 @@ class Entity {
 			return;
 		}
 
-		switch ( get_class( $object ) ) {
-			case \WP_Post::class :
+		switch ( TRUE ) {
+			case ( $object instanceof \WP_Post ) :
 				$this->entity = $object;
 				break;
-			case \WP_Term::class :
+			case ( $object instanceof \WP_Term ):
 				$this->entity = $object;
+				break;
+			case ( $object instanceof Entity ) :
+				$this->entity = $object->expose();
 				break;
 		}
 	}
