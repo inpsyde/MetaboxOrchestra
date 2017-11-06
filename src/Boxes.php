@@ -19,6 +19,9 @@ use Brain\Nonces\WpNonce;
 class Boxes {
 
 	const REGISTER_BOXES = 'metabox-orchestra.register-boxes';
+	const ACTION_SHOW = 'metabox-orchestra.show-boxes';
+	const ACTION_SAVE = 'metabox-orchestra.save-boxes';
+	const ACTION_SAVED = 'metabox-orchestra.saved-boxes';
 
 	/**
 	 * @var bool
@@ -143,8 +146,15 @@ class Boxes {
 		// Show Boxes
 		add_action( 'add_meta_boxes', function ( $post_type, $post ) {
 			if ( $post instanceof \WP_Post ) {
-				$this->prepare_target( $post, Metabox::SHOW );
+
+				$entity = new Entity( $post );
+
+				$this->prepare_target( new Entity( $post ), Metabox::SHOW );
+
+				do_action( self::ACTION_SHOW, $entity );
+
 				array_walk( $this->boxes, [ $this, 'add_meta_box' ] );
+
 				$this->release_target();
 			}
 		}, 100, 2 );
@@ -157,10 +167,20 @@ class Boxes {
 				return;
 			}
 
+			$entity = new Entity( $post );
+
 			$this->saving = 'post';
-			$this->prepare_target( $post, Metabox::SAVE );
+
+			$this->prepare_target( $entity, Metabox::SAVE );
+
+			do_action( self::ACTION_SAVE, $entity );
+
 			array_walk( $this->boxes, [ $this, 'save_meta_box' ] );
+
+			do_action( self::ACTION_SAVED, $entity );
+
 			$this->release_target();
+
 			$this->saving = '';
 
 		}, 100, 2 );
@@ -177,8 +197,15 @@ class Boxes {
 
 		// Show Boxes
 		add_action( "{$taxonomy}_pre_edit_form", function ( \WP_Term $term ) {
-			$this->prepare_target( $term, Metabox::SHOW );
+
+			$entity = new Entity( $term );
+
+			$this->prepare_target( $entity, Metabox::SHOW );
+
+			do_action( self::ACTION_SHOW, $entity );
+
 			array_walk( $this->boxes, [ $this, 'add_meta_box' ] );
+
 			$this->release_target();
 		}, 1 );
 
@@ -202,9 +229,19 @@ class Boxes {
 			}
 
 			$this->saving = 'term';
-			$this->prepare_target( $term, Metabox::SAVE );
+
+			$entity = new Entity( $term );
+
+			$this->prepare_target( $entity, Metabox::SAVE );
+
+			do_action( self::ACTION_SAVE, $entity );
+
 			array_walk( $this->boxes, [ $this, 'save_meta_box' ] );
+
+			do_action( self::ACTION_SAVED, $entity );
+
 			$this->release_target();
+
 			$this->saving = '';
 
 		}, 100, 3 );
@@ -213,19 +250,16 @@ class Boxes {
 	}
 
 	/**
-	 * @param \WP_Term|\WP_Post $target
-	 * @param string            $show_or_save
+	 * @param Entity $entity
+	 * @param string $show_or_save
 	 */
-	private function prepare_target( $target, string $show_or_save ) {
+	private function prepare_target( Entity $entity, string $show_or_save ) {
 
-		$this->target          = new Entity( $target );
+		$this->target          = $entity;
 		$this->registering_for = $show_or_save;
 		$this->boxes           = [];
-
-		$this->locked = FALSE;
-
+		$this->locked          = FALSE;
 		$this->target->valid() and do_action( self::REGISTER_BOXES, $this, $this->target, $show_or_save );
-
 		$this->locked = TRUE;
 	}
 
