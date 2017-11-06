@@ -1,7 +1,7 @@
 # Changelog
 
-## 0.1.0
-- First release
+## _Unreleased_
+- Prevent recursion when editing post/term object form inside a `BoxAction::save()` method.
 
 ## 0.1.1
 - Minor, no logic change to AdminNotices

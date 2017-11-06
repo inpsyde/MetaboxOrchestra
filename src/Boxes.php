@@ -46,6 +46,11 @@ class Boxes {
 	private $registering_for = '';
 
 	/**
+	 * @var string
+	 */
+	private $saving = '';
+
+	/**
 	 * Initialize class.
 	 */
 	public static function init() {
@@ -147,9 +152,16 @@ class Boxes {
 		// Save Boxes
 		add_action( 'wp_insert_post', function ( $post_id, \WP_Post $post ) {
 
+			// This check allows to edit post object inside BoxAction::save() without recursion.
+			if ( $this->saving === 'post' ) {
+				return;
+			}
+
+			$this->saving = 'post';
 			$this->prepare_target( $post, Metabox::SAVE );
 			array_walk( $this->boxes, [ $this, 'save_meta_box' ] );
 			$this->release_target();
+			$this->saving = '';
 
 		}, 100, 2 );
 
@@ -173,6 +185,11 @@ class Boxes {
 		// Save Boxes
 		add_action( 'edit_term', function ( $term_id, $term_taxonomy_id, $term_taxonomy ) use ( $taxonomy ) {
 
+			// This check allows to edit term object inside BoxAction::save() without recursion.
+			if ( $this->saving === 'term' ) {
+				return;
+			}
+
 			$term = get_term_by( 'term_taxonomy_id', $term_taxonomy_id );
 
 			if (
@@ -184,9 +201,11 @@ class Boxes {
 				return;
 			}
 
+			$this->saving = 'term';
 			$this->prepare_target( $term, Metabox::SAVE );
 			array_walk( $this->boxes, [ $this, 'save_meta_box' ] );
 			$this->release_target();
+			$this->saving = '';
 
 		}, 100, 3 );
 
