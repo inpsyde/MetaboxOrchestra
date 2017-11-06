@@ -1,8 +1,5 @@
 # Changelog
 
-## _Unreleased_
-- Prevent recursion when editing post/term object form inside a `BoxAction::save()` method.
-
 ## 0.1.1
 - Minor, no logic change to AdminNotices
 - Introduce unit tests
@@ -17,5 +14,8 @@
 - **[BREAKING]** `Metabox::create_info()` new requires two arguments, the second being current `Entity`.
 
 ## 0.3.1
-- Fix a bug in Boxes class
-- update README code sample.
+- Fix a bug in Boxes class.
+- Update README code sample.
+
+## 0.3.2
+- Prevent recursion when editing post/term object form inside a `BoxAction::save()` method.
