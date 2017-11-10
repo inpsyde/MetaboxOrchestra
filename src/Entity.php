@@ -22,6 +22,11 @@ class Entity {
 	private $entity = null;
 
 	/**
+	 * @var int
+	 */
+	private $id = 0;
+
+	/**
 	 * @var array
 	 */
 	private $entity_array;
@@ -38,12 +43,15 @@ class Entity {
 		switch ( TRUE ) {
 			case ( $object instanceof \WP_Post ) :
 				$this->entity = $object;
+				$this->id     = (int) $object->ID;
 				break;
 			case ( $object instanceof \WP_Term ):
 				$this->entity = $object;
+				$this->id     = (int) $object->term_id;
 				break;
 			case ( $object instanceof Entity ) :
 				$this->entity = $object->expose();
+				$this->id     = $object->id();
 				break;
 		}
 	}
@@ -59,11 +67,19 @@ class Entity {
 	}
 
 	/**
+	 * @return int
+	 */
+	public function id(): int {
+
+		return $this->id;
+	}
+
+	/**
 	 * @return bool
 	 */
 	public function valid(): bool {
 
-		return (bool) $this->entity;
+		return $this->entity && $this->id() > 0;
 	}
 
 	/**
