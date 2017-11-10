@@ -26,7 +26,7 @@ class Boxes {
 	/**
 	 * @var bool
 	 */
-	private static $init = FALSE;
+	private static $init = false;
 
 	/**
 	 * @var Metabox[]
@@ -36,7 +36,7 @@ class Boxes {
 	/**
 	 * @var bool
 	 */
-	private $locked = TRUE;
+	private $locked = true;
 
 	/**
 	 * @var Entity
@@ -88,7 +88,7 @@ class Boxes {
 
 		if (
 			! $this->target->valid()
-			|| ! in_array( $this->registering_for, [ Metabox::SAVE, Metabox::SHOW ], TRUE )
+			|| ! in_array( $this->registering_for, [ Metabox::SAVE, Metabox::SHOW ], true )
 		) {
 			return $this;
 		}
@@ -159,33 +159,32 @@ class Boxes {
 			}
 		}, 100, 2 );
 
+		// Save Boxes even if WordPress says content is empty.
+		add_filter(
+			'wp_insert_post_empty_content',
+			function ( $empty, array $post_array ) {
+
+				global $post;
+				if ( ! $empty || ! $post instanceof \WP_Post || ! $post->ID ) {
+					return $empty;
+				}
+
+				if ( apply_filters( 'metabox-orchestra.save-on-empty-post', TRUE, $post, $post_array ) ) {
+					$this->on_post_save( $post );
+				}
+
+				return $empty;
+			},
+			PHP_INT_MAX,
+			2
+		);
+
 		// Save Boxes
 		add_action( 'wp_insert_post', function ( $post_id, \WP_Post $post ) {
-
-			// This check allows to edit post object inside BoxAction::save() without recursion.
-			if ( $this->saving === 'post' ) {
-				return;
-			}
-
-			$entity = new Entity( $post );
-
-			$this->saving = 'post';
-
-			$this->prepare_target( $entity, Metabox::SAVE );
-
-			do_action( self::ACTION_SAVE, $entity );
-
-			array_walk( $this->boxes, [ $this, 'save_meta_box' ] );
-
-			do_action( self::ACTION_SAVED, $entity );
-
-			$this->release_target();
-
-			$this->saving = '';
-
+			$this->on_post_save( $post );
 		}, 100, 2 );
 
-		return TRUE;
+		return true;
 	}
 
 	/**
@@ -246,7 +245,7 @@ class Boxes {
 
 		}, 100, 3 );
 
-		return TRUE;
+		return true;
 	}
 
 	/**
@@ -258,9 +257,9 @@ class Boxes {
 		$this->target          = $entity;
 		$this->registering_for = $show_or_save;
 		$this->boxes           = [];
-		$this->locked          = FALSE;
+		$this->locked          = false;
 		$this->target->valid() and do_action( self::REGISTER_BOXES, $this, $this->target, $show_or_save );
-		$this->locked = TRUE;
+		$this->locked = true;
 	}
 
 	/**
@@ -272,13 +271,13 @@ class Boxes {
 	private function box_enabled( Metabox $box, string $type ): bool {
 
 		if ( ! $this->target->valid() ) {
-			return FALSE;
+			return false;
 		}
 
-		$accept = FALSE;
+		$accept = false;
 		/** @var \WP_Post|\WP_Term $object */
 		$object = $this->target->expose();
-		switch ( TRUE ) {
+		switch ( true ) {
 			case $this->target->is( \WP_Post::class ) && $box instanceof PostMetabox:
 				$accept = $box->accept_post( $object, $type );
 				break;
@@ -333,6 +332,40 @@ class Boxes {
 	}
 
 	/**
+	 * @param \WP_Post $post
+	 */
+	private function on_post_save( \WP_Post $post ) {
+
+		// This check allows to edit post object inside BoxAction::save() without recursion.
+		if ( $this->saving === 'post' ) {
+			return;
+		}
+
+		static $saved;
+		if ( $saved ) {
+			return;
+		}
+
+		$saved = true;
+
+		$entity = new Entity( $post );
+
+		$this->saving = 'post';
+
+		$this->prepare_target( $entity, Metabox::SAVE );
+
+		do_action( self::ACTION_SAVE, $entity );
+
+		array_walk( $this->boxes, [ $this, 'save_meta_box' ] );
+
+		do_action( self::ACTION_SAVED, $entity );
+
+		$this->release_target();
+
+		$this->saving = '';
+	}
+
+	/**
 	 * @param Metabox|PostMetabox|TermMetabox $box
 	 * @param string                          $box_id
 	 */
@@ -378,7 +411,7 @@ class Boxes {
 		$this->target          = null;
 		$this->registering_for = '';
 		$this->boxes           = [];
-		$this->locked          = FALSE;
+		$this->locked          = false;
 	}
 
 }
