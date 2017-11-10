@@ -1,8 +1,12 @@
 # Changelog
 
+## 0.4.0
+- Save post boxes even if post has empty content and WordPress will not proceed in save it (so `"wp_insert_post"` is not triggered).
+- Introduce `"metabox-orchestra.save-on-empty-post"` hook to add the possibility to disallow box saving if content is empty. 
+
 ## 0.3.4
 - Added `Entity::id()` to obtain a type-safe id of wrapped entity and mark entity as not valid if its id is <= 0.
-0
+
 ## 0.3.3
 - Added three new hooks: before showing boxes and before and after saving them.
 - Improved `Entity` object constructor, now accepts an instance of another `Entity`.
