@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.4.1
+- Fix bug of post boxes not saving on new posts.
+
 ## 0.4.0
 - Save post boxes even if post has empty content and WordPress will not proceed in save it (so `"wp_insert_post"` is not triggered).
 - Introduce `"metabox-orchestra.save-on-empty-post"` hook to add the possibility to disallow box saving if content is empty. 
