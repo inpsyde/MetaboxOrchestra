@@ -83,7 +83,7 @@ class Entity {
 	}
 
 	/**
-	 * @param $type
+	 * @param string $type
 	 *
 	 * @return bool
 	 */
