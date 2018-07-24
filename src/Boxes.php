@@ -336,6 +336,10 @@ class Boxes {
 	 */
 	private function on_post_save( \WP_Post $post ) {
 
+		if ( wp_is_post_autosave( $post ) || wp_is_post_revision( $post ) ) {
+			return;
+		}
+
 		// This check allows to edit post object inside BoxAction::save() without recursion.
 		if ( $this->saving === 'post' ) {
 			return;
@@ -375,17 +379,13 @@ class Boxes {
 			return;
 		}
 
-		$is_post = $this->target->is( \WP_Post::class );
-		$object  = $this->target->expose();
-
 		/** @var \WP_Post|\WP_Term $object */
-		if ( $is_post && ( wp_is_post_autosave( $object ) || wp_is_post_revision( $object ) ) ) {
-			return;
-		}
+		$object  = $this->target->expose();
+		$is_post = $object instanceof \WP_Post;
 
 		$screen     = $is_post ? $object->post_type : "edit-{$object->taxonomy}";
 		$screen     = apply_filters( 'metabox-orchestra.box-notices-screen', $screen, $box, $object );
-		$object_id  = $is_post ? $object->ID : $object->term_id;
+		$object_id  = $this->target->id();
 		$auth_class = $is_post ? PostMetaboxAuth::class : TermMetaboxAuth::class;
 
 		$notices = AdminNotices::init( (string) $screen );
