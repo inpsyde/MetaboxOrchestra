@@ -345,7 +345,10 @@ class Boxes {
 			return;
 		}
 
-		static $saved;
+        if ( is_multisite() && ms_is_switched() ) {
+            return;
+        }
+        static $saved;
 		if ( $saved ) {
 			return;
 		}
