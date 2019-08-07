@@ -336,7 +336,11 @@ class Boxes {
 	 */
 	private function on_post_save( \WP_Post $post ) {
 
-		if ( wp_is_post_autosave( $post ) || wp_is_post_revision( $post ) ) {
+        if (
+            wp_is_post_autosave( $post )
+            || wp_is_post_revision( $post )
+            || ( is_multisite() && ms_is_switched() )
+        ) {
 			return;
 		}
 
@@ -345,9 +349,6 @@ class Boxes {
 			return;
 		}
 
-        if ( is_multisite() && ms_is_switched() ) {
-            return;
-        }
         static $saved;
 		if ( $saved ) {
 			return;
