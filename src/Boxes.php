@@ -136,6 +136,8 @@ class Boxes {
 		do_meta_boxes( "edit-{$term->taxonomy}", 'normal', $term );
 		do_meta_boxes( "edit-{$term->taxonomy}", 'advanced', $term );
 		echo '</div></div>';
+        // remove the term hook after being executed
+        unset($wp_meta_boxes["edit-{$term->taxonomy}"]);
 	}
 
 	/**
