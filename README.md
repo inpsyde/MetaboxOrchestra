@@ -20,7 +20,7 @@
 After it is installed via Composer, and composer autoload is required,Metabox Orchestra needs to be bootstrapped, like this:
 
 ```php
-MetaboxOrchestra\Bootstrap\bootstrap();
+MetaboxOrchestra\Bootstrap::bootstrap();
 ```
 
 - This can be done in any plugin, MU plugin or theme `functions.php` with no need to wrap the call in any hook.
