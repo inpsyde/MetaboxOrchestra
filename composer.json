@@ -2,7 +2,7 @@
   "name": "inpsyde/metabox-orchestra",
   "description": "Package for OOP WordPress metabox orchestration.",
   "type": "library",
-  "license": "MIT",
+  "license": "GPL-2.0-or-later",
   "authors": [
     {
       "name": "Inpsyde GmbH",
