@@ -7,7 +7,7 @@
 ## Features
 
 - Allows to add metaboxes to taxonomy terms
-- Automatically handle nonces and authorizations.
+- Automatically handles nonces and authorizations.
 - Agnostic about the actual rendering and saving mechanism of metaboxes
 - OOP infrastructure
 
@@ -17,7 +17,7 @@
 
 "Metabox Orchestra" is **not** a plugin, but a Composer package. It can be required by themes, plugins or at website level for sites entirely managed by Composer.
 
-After it is installed via Composer, and composer autoload is required,Metabox Orchestra needs to be bootstrapped, like this:
+After it is installed via Composer, and composer autoload is required, Metabox Orchestra needs to be bootstrapped, like this:
 
 ```php
 MetaboxOrchestra\Bootstrap::bootstrap();
@@ -49,8 +49,8 @@ The objects are:
 
 ### Metabox Builder
 
-The builder is an object implementing `PostMetabox` for boxes to be print in posts edit screen, and `TermMetabox` for 
-boxes to be print in taxonomy terms edit screen.
+The builder is an object implementing `PostMetabox` for boxes to be printed in posts edit screen, and `TermMetabox` for 
+boxes to be printed in taxonomy terms edit screen.
 
 Below the signature of `PostMetabox` public methods:
 
@@ -70,7 +70,7 @@ interface PostMetabox extends Metabox {
 `TermMetabox` interface is practically identical, only in places where `PostMetabox` expects a `WP_Post`,
 `TermMetabox` expects a `WP_Term`.
 
-> _**Note**: both `PostMetabox` and `TermMetabox` extends `Metabox` interface which only contains the `create_info()` method, which, for readability sake, is shown as part of `PostMetabox` in the snippet above._ 
+> _**Note**: both `PostMetabox` and `TermMetabox` extend the `Metabox` interface which only contains the `create_info()` method, which (for the sake of readability) is shown as part of `PostMetabox` in the snippet above._ 
 
 
 
@@ -78,7 +78,7 @@ interface PostMetabox extends Metabox {
 
 `PostMetabox::create_info()` (and `TermMetabox::create_info()`) must return an instance of `BoxInfo`.
 
-This is a value object, shipped with the library. It encapsulates the scalar arguments that are usually passed to `add_meta_box()` WordPress function: metabox id, title, context and priority.
+This is a value object shipped with the library. It encapsulates the scalar arguments that are usually passed to `add_meta_box()` WordPress function: metabox id, title, context and priority.
 
 From inside `create_info()` method an info object can be returned just by instantiating it:
 
@@ -113,13 +113,13 @@ public function create_info( string $show_or_save, Entity $entity ): BoxInfo {
 }
 ```
 
-The `$show_or_save` argument can be used to distinguish if the `create_info()` is called when *showing* the metabox or when *saving* it; fir the purpose the passed value has to be compared to the constants: `Metabox::SHOW` and `Metabox::SAVE`.
+The `$show_or_save` argument can be used to distinguish if the `create_info()` is called when *showing* the metabox or when *saving* it; for this purpose the passed value has to be compared to the constants: `Metabox::SHOW` and `Metabox::SAVE`.
 
 The `$entity` argument is an object wrapping the `WP_Post` (or `WP_Term`) the metabox will be shown for.
 
-The objects as a method `is()` to know what king of object it actually wraps, and other useful methods, including `expose()` that return the wrapped object.
+The object has a method `is()` to know what kind of object it actually wraps, and other useful methods, including `expose()` that returns the wrapped object.
 
-For example, to use the post type label as part of metabox title it is possible do:
+For example, to use the post type label as part of metabox title it is possible to do:
 
 ```php
 public function create_info( string $show_or_save, Entity $entity ): BoxInfo {
@@ -155,11 +155,11 @@ So it is a _very_ simple object. What happens inside `render()` it's up to you.
 
 The `BoxInfo` instance passed to `render()` is the same that is returned by `Metabox::create_info()`.
 
-Very likely the render method will need to access the current object that is being edited (either a `WP_Post` or a `WP_Term`), but `render()` does not receives it.
+Very likely the render method will need to access the current object that is being edited (either a `WP_Post` or a `WP_Term`), but `render()` does not receive it.
 
 That's not an issue, because the view object is returned from `PostMetabox::create_view()` (or `TermMetabox::create_view()`) that receives that object.
 
-Which means that the view object could accept it in constructor the object.
+Which means that the view object could accept it in the constructor the object.
 
 For example:
 
@@ -172,7 +172,7 @@ public function create_view( \WP_Post $post ): BoxView {
 }
 ```
 
-Note that adding a nonce field inside the `BoxView::render()` method is **not** necessary: "Metabox Orchestra" handle all nonce things.
+Note that adding a nonce field inside the `BoxView::render()` method is **not** necessary: "Metabox Orchestra" handles all nonce things.
 
 
 
@@ -180,7 +180,7 @@ Note that adding a nonce field inside the `BoxView::render()` method is **not** 
 
 "Metabox Orchestra" does **not** provide any action class, but just an action _interface_ that is the same for post and term metaboxes.
 
-The whole interface methods signature is:
+The whole interface method signature is:
 
 ```php
 interface BoxAction {
@@ -191,11 +191,11 @@ interface BoxAction {
 
 So it is a _very_ simple object. What happens inside `save()` it's up to you.
 
-Very likely the render method will need to access the current object that is being saved (either a `WP_Post` or a `WP_Term`), but the `save()` does not receives it.
+Very likely the render method will need to access the current object that is being saved (either a `WP_Post` or a `WP_Term`), but the `save()` does not receive it.
 
 That's not an issue, because the action object is returned from `PostMetabox::create_action()` (or `TermMetabox::create_action()`) that receives that object.
 
-Which means that the action object could accept in constructor the object.
+Which means that the action object could accept it in the constructor the object.
 
 For example:
 
@@ -208,9 +208,9 @@ public function create_action( \WP_Post $post ): BoxAction {
 }
 ```
 
-The `AdminNotices` instance passed to `BoxAction::save()` method, is an object that allows to show an error or a success message as admin notice.
+The `AdminNotices` instance passed to the `BoxAction::save()` method, is an object that allows to show an error or a success message as admin notice.
 
-It is absolutely optional and should not be abused, but can be useful especially to inform the user if same error happen during the saving routine.
+It is absolutely optional and should not be abused, but can be useful especially to inform the user if same errors happen during the saving routine.
 
 Note that checking for nonces or for capability inside the `BoxAction::save()` method is **not** necessary:
 "Metabox Orchestra" does it for you.
@@ -238,7 +238,7 @@ add_action( Boxes::REGISTER_BOXES, function ( Boxes $boxes ) {
 
 ## Complete Example
 
-Below there's a trivial yet complete example on how to add a working box to category edit screen.
+Below there's a trivial yet complete example on how to add a working box to the category edit screen.
 
 First the "Box" object:
 
@@ -361,7 +361,7 @@ class SampleAction implements BoxAction {
 
 ```
 
-and finally the "bootstrapping" that will probably happen in main plugin file:
+and finally the "bootstrapping" that will probably happen in the main plugin file:
 
 ```php
 namespace MyProject;
@@ -378,11 +378,11 @@ add_action(
 );
 ```
 
-This is more code than it would be necessary with "normal" WordPress procedural approach, but it is modular, is testable, enable re-usability and composition also it automatically does all the boring repetitive tasks.
+This is more code than it would be necessary with "normal" WordPress procedural approach, but it is modular, it is testable, enables re-usability and composition and it does all the boring repetitive tasks automatically.
 
 Also is not _that_ more: adding proper checks for capability and nonces, adding the code to print the admin notices the "standard" WordPress procedural approach will not take _that_ less code.
 
-Plus, the above snippets prints the box on *term* edit screen: doing it needs a big chunk of code that 
+Plus, the above snippets print the box on the *term* edit screen: doing it needs a big chunk of code that 
 "Metabox Orchestra" does for you.
 
 ---
