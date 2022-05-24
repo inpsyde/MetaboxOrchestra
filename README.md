@@ -117,7 +117,7 @@ The `$show_or_save` argument can be used to distinguish if the `create_info()` i
 
 The `$entity` argument is an object wrapping the `WP_Post` (or `WP_Term`) the metabox will be shown for.
 
-The objective of the method `is()` is to know what kind of object it actually wraps, and other useful methods, including `expose()` that returns the wrapped object.
+The object has a method `is()` to know what kind of object it actually wraps, and other useful methods, including `expose()` that returns the wrapped object.
 
 For example, to use the post type label as part of metabox title it is possible to do:
 
