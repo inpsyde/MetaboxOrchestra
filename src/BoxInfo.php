@@ -104,6 +104,7 @@ final class BoxInfo implements \ArrayAccess {
 	/**
 	 * @inheritdoc
 	 */
+	#[\ReturnTypeWillChange] 
 	public function offsetExists( $offset ) {
 
 		return array_key_exists( $offset, $this->meta );
@@ -112,6 +113,7 @@ final class BoxInfo implements \ArrayAccess {
 	/**
 	 * @inheritdoc
 	 */
+	#[\ReturnTypeWillChange] 
 	public function offsetGet( $offset ) {
 
 		return $this->offsetExists( $offset ) ? $this->meta[ $offset ] : NULL;
@@ -120,6 +122,7 @@ final class BoxInfo implements \ArrayAccess {
 	/**
 	 * @inheritdoc
 	 */
+	#[\ReturnTypeWillChange] 
 	public function offsetSet( $offset, $value ) {
 
 		$this->meta[ $offset ] = $value;
@@ -128,6 +131,7 @@ final class BoxInfo implements \ArrayAccess {
 	/**
 	 * @inheritdoc
 	 */
+	#[\ReturnTypeWillChange] 
 	public function offsetUnset( $offset ) {
 
 		unset( $this->meta[ $offset ] );
