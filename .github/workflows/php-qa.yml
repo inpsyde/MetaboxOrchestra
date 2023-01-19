@@ -1,0 +1,16 @@
+name: PHP-QA
+
+on: [ push ]
+
+jobs:
+  lint-php:
+    uses: inpsyde/reusable-workflows/.github/workflows/lint-php.yml@main
+    with:
+      PHP_MATRIX: >-
+        ["7.2", "7.3", "7.4", "8.0", "8.1"]
+  tests-unit-php:
+    uses: inpsyde/reusable-workflows/.github/workflows/tests-unit-php.yml@main
+    needs: [ lint-php ]
+    with:
+      PHP_MATRIX: >-
+        ["7.2", "7.3", "7.4", "8.0", "8.1"]
