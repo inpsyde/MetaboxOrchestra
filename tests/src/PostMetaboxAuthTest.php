@@ -94,7 +94,7 @@ class PostMetaboxAuthTest extends TestCase {
 			->once()
 			->with( \Mockery::type( 'Error' ), \Mockery::type( 'array' ) )
 			->whenHappen( function ( \Error $error ) {
-				static::assertContains( 'Nonce', $error->getMessage() );
+				static::assertStringContainsString( 'Nonce', $error->getMessage() );
 			} );
 
 		static::assertFalse( $auth->authorized() );

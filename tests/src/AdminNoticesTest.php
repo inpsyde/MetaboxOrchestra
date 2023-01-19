@@ -45,16 +45,16 @@ class AdminNoticesTest extends TestCase {
 					static::assertArrayHasKey( 'screen_test', $messages );
 					static::assertArrayHasKey( AdminNotices::ERROR, $messages[ 'screen_test' ] );
 					static::assertArrayHasKey( AdminNotices::SUCCESS, $messages[ 'screen_test' ] );
-					static::assertInternalType( 'array', $messages[ 'screen_test' ][ AdminNotices::ERROR ] );
-					static::assertInternalType( 'array', $messages[ 'screen_test' ][ AdminNotices::SUCCESS ] );
+					static::assertIsArray( $messages[ 'screen_test' ][ AdminNotices::ERROR ] );
+					static::assertIsArray( $messages[ 'screen_test' ][ AdminNotices::SUCCESS ] );
 					static::assertCount( 1, $messages[ 'screen_test' ][ AdminNotices::ERROR ] );
 					static::assertCount( 1, $messages[ 'screen_test' ][ AdminNotices::SUCCESS ] );
 
 					$error   = reset( $messages[ 'screen_test' ][ AdminNotices::ERROR ] );
 					$success = reset( $messages[ 'screen_test' ][ AdminNotices::SUCCESS ] );
 
-					static::assertInternalType( 'array', $error );
-					static::assertInternalType( 'array', $success );
+					static::assertIsArray( $error );
+					static::assertIsArray( $success );
 					static::assertContains( 'This is an error', $error );
 					static::assertContains( 'Error!', $error );
 					static::assertContains( 'This is a success', $success );
@@ -111,12 +111,12 @@ class AdminNoticesTest extends TestCase {
 		$notices->do_notices();
 		$output = ob_get_clean();
 
-		static::assertContains( 'notice-' . AdminNotices::ERROR, $output );
-		static::assertContains( 'notice-' . AdminNotices::SUCCESS, $output );
-		static::assertContains( 'Error!', $output );
-		static::assertContains( 'Success!', $output );
-		static::assertContains( 'This is an error', $output );
-		static::assertContains( 'This is a success', $output );
+		static::assertStringContainsString( 'notice-' . AdminNotices::ERROR, $output );
+		static::assertStringContainsString( 'notice-' . AdminNotices::SUCCESS, $output );
+		static::assertStringContainsString( 'Error!', $output );
+		static::assertStringContainsString( 'Success!', $output );
+		static::assertStringContainsString( 'This is an error', $output );
+		static::assertStringContainsString( 'This is a success', $output );
 	}
 
 	public function testAddNoUserId() {
