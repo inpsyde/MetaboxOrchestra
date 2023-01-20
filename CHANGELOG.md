@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.4.2
+- Fix PHP 8.1 warnings.
+
 ## 0.4.1
 - Fix bug of post boxes not saving on new posts.
 
