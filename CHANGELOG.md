@@ -1,7 +1,13 @@
 # Changelog
 
-## 0.4.2
+## 0.4.4
 - Fix PHP 8.1 warnings.
+
+## 0.4.3
+- Fix: terms MetaBoxes is printing twice in case other plugins use same code structure.
+
+## 0.4.2
+- Fix: metaBox not saved when other plugins switching between blogs
 
 ## 0.4.1
 - Fix bug of post boxes not saving on new posts.
