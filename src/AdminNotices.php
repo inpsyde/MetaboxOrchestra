@@ -78,7 +78,7 @@ class AdminNotices {
 		string $message,
 		string $title = '',
 		string $type = self::ERROR,
-		string $target_screen = null
+		?string $target_screen = null
 	): AdminNotices {
 
 		$user_id = get_current_user_id();
