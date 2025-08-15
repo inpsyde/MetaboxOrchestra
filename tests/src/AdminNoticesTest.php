@@ -16,7 +16,6 @@ use MetaboxOrchestra\AdminNotices;
 /**
  * @author  Giuseppe Mazzapica <giuseppe.mazzapica@gmail.com>
  * @package MetaboxOrchestra
- * @license http://opensource.org/licenses/MIT MIT
  */
 class AdminNoticesTest extends TestCase {
 

@@ -18,7 +18,6 @@ use Brain\Monkey\Actions;
 /**
  * @author  Giuseppe Mazzapica <giuseppe.mazzapica@gmail.com>
  * @package MetaboxOrchestra
- * @license http://opensource.org/licenses/MIT MIT
  */
 class PostMetaboxAuthTest extends TestCase {
 
